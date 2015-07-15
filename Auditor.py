@@ -113,7 +113,7 @@ class Auditor(wx.Frame):
         # self.statusBarMain = self.CreateStatusBar()
 
     def template_mfessentials(self, event):
-        self.checkListBoxAudits.SetCheckedStrings(["Basic", "Platform"])
+        self.checkListBoxAudits.SetCheckedStrings(["Basic", "Platform", "Usage"])
         self.checkBoxForumOptimized.SetValue(True)
         self.serial = False
 
