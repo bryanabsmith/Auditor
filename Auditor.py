@@ -7,6 +7,8 @@ import wx
 # TODO Clean up the code.
 
 
+# Licenced under the MIT Licence. See LICENCE for more details.
+
 class Auditor(wx.Frame):
     def __init__(self, parent, title):
 

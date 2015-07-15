@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Warning: This doesn't actually work...yet.
+
 echo "\e[31m:: Freezing Auditor...\e[0m"
 python setup.py bdist_mac
 
