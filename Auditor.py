@@ -24,7 +24,7 @@ class Auditor(wx.Frame):
 
         self.panelMain = wx.Panel(self)
         self.vBoxMain = wx.BoxSizer(wx.VERTICAL)
-        self.labelSelect = wx.StaticText(self.panelMain, label="Select the information that you'd like:")
+        self.labelSelect = wx.StaticText(self.panelMain, label="Select the information that you'd like collected:")
         self.vBoxOptions = wx.BoxSizer(wx.VERTICAL)
         self.labelOptions = wx.StaticText(self.panelMain, label="Options:")
         self.checkBoxOpen = wx.CheckBox(self.panelMain, label="Open report when done")
