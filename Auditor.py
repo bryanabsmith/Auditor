@@ -25,7 +25,9 @@ class Auditor(wx.Frame):
         self.panelMain = wx.Panel(self)
         self.vBoxMain = wx.BoxSizer(wx.VERTICAL)
         self.labelSelect = wx.StaticText(self.panelMain, label="Select the information that you'd like:")
-        self.hBoxForumCheckbox = wx.BoxSizer(wx.HORIZONTAL)
+        self.vBoxOptions = wx.BoxSizer(wx.VERTICAL)
+        self.labelOptions = wx.StaticText(self.panelMain, label="Options:")
+        self.checkBoxOpen = wx.CheckBox(self.panelMain, label="Open report when done")
         self.checkBoxForumOptimized = wx.CheckBox(self.panelMain, label="Optimize for forums (BBCode)")
         # self.buttonHelp = wx.Button(self.panelMain, id=wx.ID_HELP, size=(30, 30))
         self.buttonrun_all = wx.Button(self.panelMain, label="All", size=(120, 30))
@@ -71,8 +73,10 @@ class Auditor(wx.Frame):
         # self.vBoxMain.Add(self.buttonRunAudit, proportion=0, flag=wx.CENTRE | wx.TOP, border=5)
         # self.vBoxMain.Add((-1, 10))
 
-        self.hBoxForumCheckbox.Add(self.checkBoxForumOptimized, proportion=0, flag=wx.RIGHT, border=10)
-        self.vBoxMain.Add(self.hBoxForumCheckbox, flag=wx.ALIGN_RIGHT | wx.BOTTOM | wx.TOP, border=10)
+        self.vBoxOptions.Add(self.labelOptions, proportion=0, flag=wx.LEFT, border=10)
+        self.vBoxOptions.Add(self.checkBoxForumOptimized, proportion=1, flag=wx.LEFT | wx.TOP, border=10)
+        self.vBoxOptions.Add(self.checkBoxOpen, proportion=1, flag=wx.LEFT, border=10)
+        self.vBoxMain.Add(self.vBoxOptions, flag=wx.ALIGN_LEFT | wx.BOTTOM | wx.TOP, border=10)
 
         self.hBoxButtons = wx.BoxSizer(wx.HORIZONTAL)
         # self.buttonrun_all.SetDefault()
@@ -226,6 +230,7 @@ Here is a list of all the pieces of information collected:
         if self.checkBoxForumOptimized.GetValue():
             self.audit += "\n[/code]"
 
+        path = ""
         self.dialogSave.SetFilename("Auditor-" + time.strftime("%d-%m-%Y-at-%H-%M-%S"))
         if self.dialogSave.ShowModal() == wx.ID_OK:
             path = self.dialogSave.GetPath()
@@ -233,6 +238,8 @@ Here is a list of all the pieces of information collected:
             output.write(self.audit)
             output.close()
 
+        if self.checkBoxOpen.GetValue():
+            subprocess.Popen(('open', path), stdout=subprocess.PIPE)
         # self.statusBarMain.SetStatusText("")
         self.checkListBoxAudits.Enable()
         # self.buttonrun_all.Enable()
@@ -295,12 +302,16 @@ Here is a list of all the pieces of information collected:
 
         dialog.Destroy()
 
+        path = ""
         self.dialogSave.SetFilename("Auditor-" + time.strftime("%d-%m-%Y-at-%H-%M-%S"))
         if self.dialogSave.ShowModal() == wx.ID_OK:
             path = self.dialogSave.GetPath()
             output = open(path, "w")
             output.write(self.audit)
             output.close()
+
+        if self.checkBoxOpen.GetValue():
+            subprocess.Popen(('open', path), stdout=subprocess.PIPE)
 
         # self.statusBarMain.SetStatusText("")
         self.checkListBoxAudits.Enable()
@@ -329,8 +340,11 @@ Here is a list of all the pieces of information collected:
         # self.statusBarMain.SetStatusText("Getting processor information...")
         self.audit += "     Processor Info: " + sysctlProcPipe[26:]
 
+        memMB = (int(sysctlMemPipe[12:]) / 1024) / 1024
+        memGB = ((int(sysctlMemPipe[12:]) / 1024) / 1024) / 1024
         # self.statusBarMain.SetStatusText("Getting memory information...")
-        self.audit += "     Memory Info: " + str(int(sysctlMemPipe[12:]) / 1024 / 1024) + " MB"
+        # self.audit += "     Memory Info: " + str(int(sysctlMemPipe[12:]) / 1024 / 1024) + " MB"
+        self.audit += "     Memory Info: " + str(memGB) + "GB (" + str(memMB) + "MB)"
 
         self.audit += "\n     Model Name: "
         modelName = subprocess.Popen(('system_profiler', 'SPHardwareDataType'), stdout=subprocess.PIPE)
