@@ -1,0 +1,10 @@
+{
+  "title": "Auditor",
+  "icon": "Auditor.icns",
+  "background": "background.png",
+  "icon-size": 60,
+  "contents": [
+    { "x": 95, "y": 190, "type": "file", "path": "Auditor.app" },
+    { "x": 305, "y": 190, "type": "link", "path": "/Applications" }
+  ]
+}
