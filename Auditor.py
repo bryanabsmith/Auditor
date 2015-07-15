@@ -13,6 +13,9 @@ class Auditor(wx.Frame):
     def __init__(self, parent, title):
 
         self.audit = ""
+
+        self.serial = True
+
         self.run_allChecked = False
         self.wildcardSave = "Text document (*.txt)|*.txt"
 
@@ -42,6 +45,7 @@ class Auditor(wx.Frame):
         # self.buttonrun_selected = wx.Button(self.panelMain, label="Selected", size=(120, 30))
         self.menuBarMain = wx.MenuBar()
         self.menuRun = wx.Menu()
+        self.menuTemplates = wx.Menu()
         self.menuHelp = wx.Menu()
         self.dialogSave = wx.FileDialog(None, message="Save report as ...",
                                         defaultDir=os.path.expanduser("~") + "/Desktop/", defaultFile="",
@@ -81,17 +85,21 @@ class Auditor(wx.Frame):
         self.menuRun.Append(101, "Run all...\tCtrl-A")
         self.menuRun.Append(102, "Run selected...\tCtrl-S")
 
+        self.menuTemplates.Append(201, "Mac-Forums essentials\tCtrl-M")
+
         self.menuHelp.Append(wx.ID_ABOUT, "&About Auditor")
-        self.menuHelp.Append(201, "About data collected...\tCtrl-H")
+        self.menuHelp.Append(301, "About data collected...\tCtrl-H")
 
         self.menuBarMain.Append(self.menuRun, "&Run")
+        self.menuBarMain.Append(self.menuTemplates, "&Templates")
         self.menuBarMain.Append(self.menuHelp, "&Help")
 
         self.SetMenuBar(self.menuBarMain)
         self.Bind(wx.EVT_MENU, self.about_menu_click, id=wx.ID_ABOUT)
         self.Bind(wx.EVT_MENU, self.run_all, id=101)
         self.Bind(wx.EVT_MENU, self.run_selected, id=102)
-        self.Bind(wx.EVT_MENU, self.show_help, id=201)
+        self.Bind(wx.EVT_MENU, self.template_mfessentials, id=201)
+        self.Bind(wx.EVT_MENU, self.show_help, id=301)
         # self.Bind(wx.EVT_BUTTON, self.show_help, self.buttonHelp)
         self.Bind(wx.EVT_BUTTON, self.run_all, self.buttonrun_all)
         self.Bind(wx.EVT_BUTTON, self.run_selected, self.buttonrun_selected)
@@ -99,6 +107,11 @@ class Auditor(wx.Frame):
         # self.Bind(wx.EVT_BUTTON, self.buttonrun_selected_click, self.buttonrun_selected)
 
         # self.statusBarMain = self.CreateStatusBar()
+
+    def template_mfessentials(self, event):
+        self.checkListBoxAudits.SetCheckedStrings(["Basic", "Platform"])
+        self.checkBoxForumOptimized.SetValue(True)
+        self.serial = False
 
     def show_help(self, event):
         message = """
@@ -225,6 +238,8 @@ Here is a list of all the pieces of information collected:
         # self.buttonrun_all.Enable()
         # self.buttonrun_selected.Enable()
 
+        self.serial = True
+
     def run_selected(self, event):
 
         # self.checkListBoxAudits.Disable()
@@ -292,6 +307,8 @@ Here is a list of all the pieces of information collected:
         # self.buttonrun_all.Enable()
         # self.buttonrun_selected.Enable()
 
+        self.serial = True
+
     def get_basic(self):
 
         self.audit += "\n\n:: Basic Info ::\n"
@@ -328,9 +345,10 @@ Here is a list of all the pieces of information collected:
         modelIDPipe = subprocess.check_output(('grep', 'Identifier'), stdin=modelID.stdout)
         self.audit += "\n     Model ID: " + modelIDPipe.split()[2]
 
-        serialNumber = subprocess.Popen(('system_profiler', 'SPHardwareDataType'), stdout=subprocess.PIPE)
-        serialNumberPipe = subprocess.check_output(('grep', 'Serial'), stdin=serialNumber.stdout)
-        self.audit += "\n     Serial number: " + serialNumberPipe.split()[3]
+        if self.serial == True:
+            serialNumber = subprocess.Popen(('system_profiler', 'SPHardwareDataType'), stdout=subprocess.PIPE)
+            serialNumberPipe = subprocess.check_output(('grep', 'Serial'), stdin=serialNumber.stdout)
+            self.audit += "\n     Serial number: " + serialNumberPipe.split()[3]
         # print(serialNumberPipe.split()[3])
 
         # Model name - http://apple.stackexchange.com/a/98089 (curl http://support-sp.apple.com/sp/product?cc=DTY3)
