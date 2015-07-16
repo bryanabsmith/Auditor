@@ -26,25 +26,17 @@ class Auditor(wx.Frame):
         self.vBoxMain = wx.BoxSizer(wx.VERTICAL)
         self.labelSelect = wx.StaticText(self.panelMain, label="Select the information that you'd like collected:")
         self.vBoxOptions = wx.BoxSizer(wx.VERTICAL)
-        self.labelOptions = wx.StaticText(self.panelMain, label="Options:")
         self.checkBoxOpen = wx.CheckBox(self.panelMain, label="Open report when done")
         self.checkBoxForumOptimized = wx.CheckBox(self.panelMain, label="Optimize for forums (BBCode)")
-        # self.buttonHelp = wx.Button(self.panelMain, id=wx.ID_HELP, size=(30, 30))
         self.buttonrun_all = wx.Button(self.panelMain, label="All", size=(120, 30))
         self.buttonrun_selected = wx.Button(self.panelMain, label="Selected", size=(120, 30))
-        # self.labelOr = wx.StaticText(self.panelMain, label="Or")
-
-        # self.checkBoxAll = wx.CheckBox(self.panelMain, label="Run All")
-
         self.checkListBoxAudits = wx.CheckListBox(self.panelMain, -1,
                                                   choices=["Basic", "Networking", "Platform", "Power", "Usage"])
         self.hBoxButtons = wx.BoxSizer(wx.HORIZONTAL)
 
-        # self.checkBoxForumOptimized = wx.CheckBox(self.panelMain, label="Optimize output for forums")
-        # self.buttonRunAudit = wx.Button(self.panelMain, label="Run Audit", size=(120, 30))
+        self.sbOptions = wx.StaticBox(self.panelMain, label="Options")
+        self.sbOptionsBox = wx.StaticBoxSizer(self.sbOptions, wx.VERTICAL)
 
-        # self.buttonrun_all = wx.Button(self.panelMain, label="All", size=(120, 30))
-        # self.buttonrun_selected = wx.Button(self.panelMain, label="Selected", size=(120, 30))
         self.menuBarMain = wx.MenuBar()
         self.menuRun = wx.Menu()
         self.menuTemplates = wx.Menu()
@@ -58,29 +50,15 @@ class Auditor(wx.Frame):
         self.Show()
 
     def init_ui(self):
-        # self.vBoxMain.Add(self.checkBoxAll, flag=wx.CENTRE | wx.TOP, border=10)
-        # self.vBoxMain.Add((-1, 10))
-        # self.vBoxMain.Add(self.labelOr, flag=wx.CENTRE | wx.BOTTOM, border=10)
-        # self.vBoxMain.Add((-1, 10))
-
         self.vBoxMain.Add(self.labelSelect, proportion=0, flag=wx.LEFT | wx.TOP, border=10)
 
         self.vBoxMain.Add(self.checkListBoxAudits, proportion=1, flag=wx.LEFT | wx.RIGHT | wx.TOP | wx.EXPAND,
                           border=10)
-        # self.vBoxMain.Add((-1, 10))
-        # self.vBoxMain.Add(self.checkBoxForumOptimized, flag=wx.CENTRE | wx.TOP, border=10)
-        # self.vBoxMain.Add((-1, 10))
-        # self.vBoxMain.Add(self.buttonRunAudit, proportion=0, flag=wx.CENTRE | wx.TOP, border=5)
-        # self.vBoxMain.Add((-1, 10))
-
-        self.vBoxOptions.Add(self.labelOptions, proportion=0, flag=wx.LEFT, border=10)
-        self.vBoxOptions.Add(self.checkBoxForumOptimized, proportion=1, flag=wx.LEFT | wx.TOP, border=10)
-        self.vBoxOptions.Add(self.checkBoxOpen, proportion=1, flag=wx.LEFT, border=10)
-        self.vBoxMain.Add(self.vBoxOptions, flag=wx.ALIGN_LEFT | wx.BOTTOM | wx.TOP, border=10)
+        self.sbOptionsBox.Add(self.checkBoxForumOptimized, proportion=0, flag=wx.LEFT)
+        self.sbOptionsBox.Add(self.checkBoxOpen, proportion=0, flag=wx.LEFT)
+        self.vBoxMain.Add(self.sbOptionsBox, proportion=0, flag=wx.LEFT | wx.RIGHT | wx.TOP | wx.EXPAND, border=10)
 
         self.hBoxButtons = wx.BoxSizer(wx.HORIZONTAL)
-        # self.buttonrun_all.SetDefault()
-        # self.hBoxButtons.Add(self.buttonHelp, proportion=0, flag=wx.RIGHT, border=10)
         self.hBoxButtons.Add(self.buttonrun_all, proportion=0, flag=wx.RIGHT, border=10)
         self.hBoxButtons.Add(self.buttonrun_selected, proportion=0, flag=wx.RIGHT, border=10)
         self.vBoxMain.Add(self.hBoxButtons, flag=wx.ALIGN_RIGHT | wx.BOTTOM, border=10)
@@ -104,13 +82,8 @@ class Auditor(wx.Frame):
         self.Bind(wx.EVT_MENU, self.run_selected, id=102)
         self.Bind(wx.EVT_MENU, self.template_mfessentials, id=201)
         self.Bind(wx.EVT_MENU, self.show_help, id=301)
-        # self.Bind(wx.EVT_BUTTON, self.show_help, self.buttonHelp)
         self.Bind(wx.EVT_BUTTON, self.run_all, self.buttonrun_all)
         self.Bind(wx.EVT_BUTTON, self.run_selected, self.buttonrun_selected)
-        # self.Bind(wx.EVT_CHECKBOX, self.run_all_or_not)
-        # self.Bind(wx.EVT_BUTTON, self.buttonrun_selected_click, self.buttonrun_selected)
-
-        # self.statusBarMain = self.CreateStatusBar()
 
     def template_mfessentials(self, event):
         self.checkListBoxAudits.SetCheckedStrings(["Basic", "Platform", "Usage"])
@@ -190,10 +163,6 @@ Here is a list of all the pieces of information collected:
                 self.run_selected()
 
     def run_all(self, event):
-        # self.checkListBoxAudits.Disable()
-        # self.buttonrun_all.Disable()
-        # self.buttonrun_selected.Disable()
-
         if self.checkBoxForumOptimized.GetValue() == True:
             self.audit = "[code]\nAuditor Report\n"
         else:
@@ -240,19 +209,11 @@ Here is a list of all the pieces of information collected:
 
         if self.checkBoxOpen.GetValue():
             subprocess.Popen(('open', path), stdout=subprocess.PIPE)
-        # self.statusBarMain.SetStatusText("")
         self.checkListBoxAudits.Enable()
-        # self.buttonrun_all.Enable()
-        # self.buttonrun_selected.Enable()
 
         self.serial = True
 
     def run_selected(self, event):
-
-        # self.checkListBoxAudits.Disable()
-        # self.buttonrun_all.Disable()
-        # self.buttonrun_selected.Disable()
-
         check = self.checkListBoxAudits.GetCheckedStrings()
         checkLen = len(check)
         progValue = 1
@@ -313,11 +274,7 @@ Here is a list of all the pieces of information collected:
         if self.checkBoxOpen.GetValue():
             subprocess.Popen(('open', path), stdout=subprocess.PIPE)
 
-        # self.statusBarMain.SetStatusText("")
         self.checkListBoxAudits.Enable()
-        # self.buttonrun_all.Enable()
-        # self.buttonrun_selected.Enable()
-
         self.serial = True
 
     def get_basic(self):
@@ -331,19 +288,12 @@ Here is a list of all the pieces of information collected:
         sysctlMem = subprocess.Popen(('sysctl', '-a'), stdout=subprocess.PIPE)
         sysctlMemPipe = subprocess.check_output(('grep', 'hw.memsize'), stdin=sysctlMem.stdout)
 
-        # self.statusBarMain.SetStatusText("Getting OS X version information...")
         self.audit += "     OS X Version: " + subprocess.check_output(["sw_vers", "-productVersion"])
-
-        # self.statusBarMain.SetStatusText("Getting OS X build information...")
         self.audit += "     OS X Build: " + subprocess.check_output(["sw_vers", "-buildVersion"])
-
-        # self.statusBarMain.SetStatusText("Getting processor information...")
         self.audit += "     Processor Info: " + sysctlProcPipe[26:]
 
         memMB = (int(sysctlMemPipe[12:]) / 1024) / 1024
         memGB = ((int(sysctlMemPipe[12:]) / 1024) / 1024) / 1024
-        # self.statusBarMain.SetStatusText("Getting memory information...")
-        # self.audit += "     Memory Info: " + str(int(sysctlMemPipe[12:]) / 1024 / 1024) + " MB"
         self.audit += "     Memory Info: " + str(memGB) + "GB (" + str(memMB) + "MB)"
 
         self.audit += "\n     Model Name: "
@@ -363,7 +313,6 @@ Here is a list of all the pieces of information collected:
             serialNumber = subprocess.Popen(('system_profiler', 'SPHardwareDataType'), stdout=subprocess.PIPE)
             serialNumberPipe = subprocess.check_output(('grep', 'Serial'), stdin=serialNumber.stdout)
             self.audit += "\n     Serial number: " + serialNumberPipe.split()[3]
-        # print(serialNumberPipe.split()[3])
 
         # Model name - http://apple.stackexchange.com/a/98089 (curl http://support-sp.apple.com/sp/product?cc=DTY3)
 
@@ -384,29 +333,17 @@ Here is a list of all the pieces of information collected:
         self.audit += "\n\n:: Platform Info ::\n"
 
         # http://pymotw.com/2/platform/
-        # self.statusBarMain.SetStatusText("Getting system platform information...")
         self.audit += "     Platform: " + platform.system()
-
-        # self.statusBarMain.SetStatusText("Getting platform node information...")
         self.audit += "\n     Node: " + platform.node()
-
-        # self.statusBarMain.SetStatusText("Getting platform release information...")
         self.audit += "\n     Release: " + platform.release()
-
-        # self.statusBarMain.SetStatusText("Getting platform version information...")
         self.audit += "\n     Version: " + platform.version()
-
-        # self.statusBarMain.SetStatusText("Getting platform machine information...")
         self.audit += "\n     Machine: " + platform.machine()
-
-        # self.statusBarMain.SetStatusText("Getting platform processor information...")
         self.audit += "\n     Processor: " + platform.processor()
 
     def get_usage(self):
 
         self.audit += "\n\n:: Usage Info ::\n"
 
-        # self.statusBarMain.SetStatusText("Getting memory usage information...")
         # http://stackoverflow.com/questions/21162721/how-to-get-physical-memory-from-top-l1-using-awk-in-os-x-mavericks - physical memory
         usedMem = subprocess.Popen(('top', '-l1'), stdout=subprocess.PIPE)
         usedMemPipe = subprocess.check_output(('grep', 'PhysMem'), stdin=usedMem.stdout)
@@ -416,7 +353,6 @@ Here is a list of all the pieces of information collected:
         self.audit += "     Memory Usage:\n          Used Memory: " + usedMemUsed + "\n          Wired Memory: " + usedMemWired.replace(
             "(", "") + "\n          Unused Memory: " + usedMemUnused
 
-        # self.statusBarMain.SetStatusText("Getting hard disk usage information...")
         diskSpace = subprocess.Popen(["df", "-H", "/"], stdout=subprocess.PIPE)
         diskSpaceInfo = diskSpace.communicate()[0]
         totalSpace = diskSpaceInfo.split()[11]
@@ -429,7 +365,6 @@ Here is a list of all the pieces of information collected:
         self.audit += "\n\n:: Networking Info ::\n"
 
         try:
-            # self.statusBarMain.SetStatusText("Getting SSID information...")
             # /System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I | grep SSID
             ssid = subprocess.Popen(
                 ('/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport', '-I'),
@@ -440,7 +375,6 @@ Here is a list of all the pieces of information collected:
             self.audit += "     SSID: N/A"
 
         try:
-            # self.statusBarMain.SetStatusText("Getting auth link information...")
             linkAuth = subprocess.Popen(
                 ('/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport', '-I'),
                 stdout=subprocess.PIPE)
@@ -449,32 +383,23 @@ Here is a list of all the pieces of information collected:
         except subprocess.CalledProcessError:
             self.audit += "\n     Link Auth: N/A"
 
-        # self.statusBarMain.SetStatusText("Getting en0 information...")
         ipEN0 = subprocess.Popen(["ipconfig", "getifaddr", "en0"], stdout=subprocess.PIPE)
         self.audit += "\n     IP Addresses:\n          en0: " + ipEN0.communicate()[0].strip("\n")
 
-        # self.statusBarMain.SetStatusText("Getting en1 information...")
         ipEN1 = subprocess.Popen(["ipconfig", "getifaddr", "en1"], stdout=subprocess.PIPE)
         self.audit += "\n          en1: " + ipEN1.communicate()[0]
 
-        # self.statusBarMain.SetStatusText("Getting external IP information...")
         extIP = subprocess.Popen(["curl", "ifconfig.me"], stdout=subprocess.PIPE)
         self.audit += "          External IP: " + extIP.communicate()[0]
 
-        # self.statusBarMain.SetStatusText("Getting external host information...")
         extHost = subprocess.Popen(["curl", "ifconfig.me/host"], stdout=subprocess.PIPE)
         self.audit += "          External Host: " + extHost.communicate()[0]
 
-        # self.statusBarMain.SetStatusText("Getting ethernet DNS information...")
         ethernetDNS = subprocess.Popen(["networksetup", "-getdnsservers", "Ethernet"], stdout=subprocess.PIPE)
         self.audit += "          Ethernet DNS: " + ethernetDNS.communicate()[0].replace("\n", "  ")
 
-        # self.statusBarMain.SetStatusText("Getting Wi-Fi DNS information...")
         wifiDNS = subprocess.Popen(["networksetup", "-getdnsservers", "Wi-Fi"], stdout=subprocess.PIPE)
         self.audit += "\n          Wi-Fi DNS: " + wifiDNS.communicate()[0].replace("\n", "  ")
-
-        # print(wifiDNS.communicate()[0].replace("\n", ", ").strip(", "))
-
 
 if __name__ == "__main__":
     app = wx.App()
