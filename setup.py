@@ -3,6 +3,8 @@ import sys
 from cx_Freeze import setup, Executable
 
 base = None
+infiles = ['ipgetter.py']
+
 if sys.platform == "win32":
     base = "Win32GUI"
 
@@ -12,6 +14,7 @@ executables = [
 
 setup(name="Auditor",
       version="1.0",
+      includes=infiles,
       description="Run audits on your Mac.",
       executables=executables
 )

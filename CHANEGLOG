@@ -1,0 +1,14 @@
+Changelog
+=========
+
+0.1 b2 (July 18, 2015)
+----------------------
+
+* Removed unnecessary networking info that was slowing things down (down from 24s to 3s on my machine).
+* Finder was opening (instead of the report) even if user cancelled the save after selecting the "open" option.
+* Removed link auth and external host (deemed not necessary).
+
+0.1 b1 (July 17, 2015)
+----------------------
+
+* Initial release.

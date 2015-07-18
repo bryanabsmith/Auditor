@@ -6,12 +6,12 @@ Auditor is a simple tool to generate basic text and BBCode formatted reports abo
 This app also produces some BBCode formatted reports (think vBulletin) so if someone requests some details, simply select the "optimize for forums" option.
 
 
-![Early screenshot of Auditor](http://www.bryanabsmith.com/auditor/screen_pre1.0.png)
+<div style="text-align:center"><img src ="http://www.bryanabsmith.com/auditor/screen_pre1.0.png" /></div>
 
 Licence
 -------
 
-The app itself is &copy; 2015 Bryan Smith.
+The app itself is &copy; 2015 Bryan Smith. Licenced under the MIT Licence.
 
 The icon is courtesy of the Tango Project and is public domain.
 

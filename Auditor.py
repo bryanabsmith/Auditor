@@ -1,3 +1,6 @@
+#!/usr/bin/python
+
+import ipgetter
 import os
 import platform
 import subprocess
@@ -13,6 +16,7 @@ class Auditor(wx.Frame):
     def __init__(self, parent, title):
 
         self.audit = ""
+        self.version = "0.1 (b2)"
 
         self.serial = True
 
@@ -59,8 +63,8 @@ class Auditor(wx.Frame):
         self.vBoxMain.Add(self.sbOptionsBox, proportion=0, flag=wx.LEFT | wx.RIGHT | wx.TOP | wx.EXPAND, border=10)
 
         self.hBoxButtons = wx.BoxSizer(wx.HORIZONTAL)
-        self.hBoxButtons.Add(self.buttonrun_all, proportion=0, flag=wx.RIGHT, border=10)
         self.hBoxButtons.Add(self.buttonrun_selected, proportion=0, flag=wx.RIGHT, border=10)
+        self.hBoxButtons.Add(self.buttonrun_all, proportion=0, flag=wx.RIGHT, border=10)
         self.vBoxMain.Add(self.hBoxButtons, flag=wx.ALIGN_RIGHT | wx.BOTTOM, border=10)
         self.panelMain.SetSizer(self.vBoxMain)
 
@@ -144,8 +148,8 @@ Here is a list of all the pieces of information collected:
     def about_menu_click(self, event):
         about_options = wx.AboutDialogInfo()
         about_options.SetName("Auditor")
-        about_options.SetVersion("1.0")
-        about_options.SetCopyright("(c) 2015 Bryan Smith. Icon courtesy of the Tango Project.")
+        about_options.SetVersion(self.version)
+        about_options.SetCopyright("(c) 2015 Bryan Smith.\n\nIcon courtesy of the Tango Project.\n\nExternal IP library, ipgetter, licenced under the DWTFYWT licence (http://www.wtfpl.net/)")
         aboutBox = wx.AboutBox(about_options)
         print(aboutBox)
 
@@ -206,9 +210,9 @@ Here is a list of all the pieces of information collected:
             output = open(path, "w")
             output.write(self.audit)
             output.close()
+            if self.checkBoxOpen.GetValue():
+                subprocess.Popen(('open', path), stdout=subprocess.PIPE)
 
-        if self.checkBoxOpen.GetValue():
-            subprocess.Popen(('open', path), stdout=subprocess.PIPE)
         self.checkListBoxAudits.Enable()
 
         self.serial = True
@@ -270,9 +274,8 @@ Here is a list of all the pieces of information collected:
             output = open(path, "w")
             output.write(self.audit)
             output.close()
-
-        if self.checkBoxOpen.GetValue():
-            subprocess.Popen(('open', path), stdout=subprocess.PIPE)
+            if self.checkBoxOpen.GetValue():
+                subprocess.Popen(('open', path), stdout=subprocess.PIPE)
 
         self.checkListBoxAudits.Enable()
         self.serial = True
@@ -361,6 +364,9 @@ Here is a list of all the pieces of information collected:
         self.audit += "\n     Hard Disk Usage, Mounted at /:\n          Total Space: " + totalSpace + "\n          Used Space: " + usedSpace + "\n          Available Space: " + availableSpace
 
     def get_networking(self):
+        # Timing:
+        #   - 0.1b1: 23s
+        #   - 0.1b2:
 
         self.audit += "\n\n:: Networking Info ::\n"
 
@@ -374,29 +380,38 @@ Here is a list of all the pieces of information collected:
         except subprocess.CalledProcessError:
             self.audit += "     SSID: N/A"
 
-        try:
-            linkAuth = subprocess.Popen(
-                ('/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport', '-I'),
-                stdout=subprocess.PIPE)
-            linkAuthPipe = subprocess.check_output(('grep', 'link'), stdin=linkAuth.stdout)
-            self.audit += "\n     Link Auth: " + linkAuthPipe.split()[2]
-        except subprocess.CalledProcessError:
-            self.audit += "\n     Link Auth: N/A"
+        # try:
+            # linkAuth = subprocess.Popen(('/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport', '-I'), stdout=subprocess.PIPE)
+            # linkAuthPipe = subprocess.check_output(('grep', 'link'), stdin=linkAuth.stdout)
+            # self.audit += "\n     Link Auth: " + linkAuthPipe.split()[2]
+        # except subprocess.CalledProcessError:
+            # self.audit += "\n     Link Auth: N/A"
 
         ipEN0 = subprocess.Popen(["ipconfig", "getifaddr", "en0"], stdout=subprocess.PIPE)
-        self.audit += "\n     IP Addresses:\n          en0: " + ipEN0.communicate()[0].strip("\n")
+        ipEN0Value = ipEN0.communicate()[0].strip("\n")
+        if ipEN0Value == "":
+            self.audit += "\n     IP Addresses:\n          en0: N/A"
+        else:
+            self.audit += "\n     IP Addresses:\n          en0: " + ipEN0Value
+        print(ipEN0Value)
 
         ipEN1 = subprocess.Popen(["ipconfig", "getifaddr", "en1"], stdout=subprocess.PIPE)
-        self.audit += "\n          en1: " + ipEN1.communicate()[0]
+        ipEN1Value = ipEN1.communicate()[0].strip("\n")
+        if ipEN1Value == "":
+            self.audit += "\n          en1: N/A"
+        else:
+            self.audit += "\n          en1: " + ipEN1Value
+        print(ipEN1Value)
 
-        extIP = subprocess.Popen(["curl", "ifconfig.me"], stdout=subprocess.PIPE)
-        self.audit += "          External IP: " + extIP.communicate()[0]
+        # extIP = subprocess.Popen(["curl", "ifconfig.me"], stdout=subprocess.PIPE)
+        extIP = ipgetter.myip()
+        self.audit += "\n          External IP: " + extIP
 
-        extHost = subprocess.Popen(["curl", "ifconfig.me/host"], stdout=subprocess.PIPE)
-        self.audit += "          External Host: " + extHost.communicate()[0]
+        # extHost = subprocess.Popen(["curl", "ifconfig.me/host"], stdout=subprocess.PIPE)
+        # self.audit += "          External Host: " + extHost.communicate()[0]
 
         ethernetDNS = subprocess.Popen(["networksetup", "-getdnsservers", "Ethernet"], stdout=subprocess.PIPE)
-        self.audit += "          Ethernet DNS: " + ethernetDNS.communicate()[0].replace("\n", "  ")
+        self.audit += "\n          Ethernet DNS: " + ethernetDNS.communicate()[0].replace("\n", "  ")
 
         wifiDNS = subprocess.Popen(["networksetup", "-getdnsservers", "Wi-Fi"], stdout=subprocess.PIPE)
         self.audit += "\n          Wi-Fi DNS: " + wifiDNS.communicate()[0].replace("\n", "  ")
