@@ -323,13 +323,19 @@ Here is a list of all the pieces of information collected:
 
         self.audit += "\n\n:: Power Info ::\n"
 
-        cycleCount = subprocess.Popen(('system_profiler', 'SPPowerDataType'), stdout=subprocess.PIPE)
-        cycleCountPipe = subprocess.check_output(('grep', 'Cycle Count'), stdin=cycleCount.stdout)
-        self.audit += "     Battery Cycle Count: " + cycleCountPipe.split()[2]
+        try:
+            cycleCount = subprocess.Popen(('system_profiler', 'SPPowerDataType'), stdout=subprocess.PIPE)
+            cycleCountPipe = subprocess.check_output(('grep', 'Cycle Count'), stdin=cycleCount.stdout)
+            self.audit += "     Battery Cycle Count: " + cycleCountPipe.split()[2]
+        except:
+            self.audit += "     Battery Cycle Count: N/A"
 
-        condition = subprocess.Popen(('system_profiler', 'SPPowerDataType'), stdout=subprocess.PIPE)
-        conditionPipe = subprocess.check_output(('grep', 'Condition'), stdin=condition.stdout)
-        self.audit += "\n     Battery Condition: " + conditionPipe.split()[1]
+        try:
+            condition = subprocess.Popen(('system_profiler', 'SPPowerDataType'), stdout=subprocess.PIPE)
+            conditionPipe = subprocess.check_output(('grep', 'Condition'), stdin=condition.stdout)
+            self.audit += "\n     Battery Condition: " + conditionPipe.split()[1]
+        except:
+            self.audit += "\n     Battery Condition: N/A"
 
     def get_platform(self):
 
